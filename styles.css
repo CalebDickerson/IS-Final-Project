@@ -1,0 +1,131 @@
+/* Jeopardy-Inspired Stylesheet - From Scratch */
+
+body {
+    background-color: #0d1b3e; /* Deep Jeopardy Blue - custom background */
+    font-family: 'Helvetica Neue', Arial, sans-serif; /* Font family def */
+    color: #f1f1f1; /* Crisp Off-White Text - custom font color */
+    margin: 0;
+    padding: 30px;
+}
+
+/* Header Section mimicking the main stage banner */
+.header-section { 
+    background-color: #f9b612; /* Jeopardy Yellow/Gold */
+    color: #0d1b3e; /* Blue text on yellow for strong contrast */
+    padding: 25px;
+    text-align: center;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    box-shadow: 0 5px 15px rgba(249,182,18,0.3);
+}
+
+.header-section a {
+    color: #1e3a8a; /* Deep Blue Links */
+    text-decoration: none;
+    font-weight: bold;
+    margin: 0 10px;
+}
+
+.header-section a:hover {
+    color: #ffffff; /* Turns white on hover */
+}
+
+/* Content blocks mimicking individual answer cards/panels */
+.content-box { 
+    background-color: #1e3a8a; /* Lighter "active" blue panel */
+    border: 3px solid #f9b612; /* Thin gold border, mandatory positioning div */
+    padding: 25px;
+    margin-bottom: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+}
+
+h1 {
+    font-family: 'Times New Roman', Times, serif; /* Seriph for main heading - font fam def */
+    margin-bottom: 10px;
+}
+
+h2 {
+    color: #ffffff; /* Section headings in White - font color def */
+    border-bottom: 2px solid #f9b612;
+    padding-bottom: 10px;
+    font-weight: bolder;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Styling lists to look a bit like point value selections */
+ol {
+    margin-left: 20px;
+}
+
+ol > li {
+    font-weight: bold;
+    color: #f9b612; /* Points/categories in Gold */
+    margin-bottom: 15px;
+}
+
+ul {
+    margin-top: 5px;
+    color: #f1f1f1; /* Facts back in White */
+    font-weight: normal;
+}
+
+ul > li {
+    font-style: italic;
+}
+/* Hexagon Grid Layout */
+.hexagon-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr; /* Creates 3 equal columns */
+    grid-auto-rows: minmax(80px, auto);
+    gap: 15px;
+    max-width: 850px;
+    margin: 30px auto; /* Centers the whole grid */
+    align-items: center;
+}
+
+/* Styling the individual category boxes */
+.hex-item {
+    background-color: #0d1b3e; /* Darker blue to pop against the main card */
+    border: 2px solid #f9b612;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+.hex-item h3 {
+    color: #f9b612;
+    margin: 0 0 5px 0;
+    font-size: 1.1em;
+    text-transform: uppercase;
+}
+
+.hex-item ul {
+    list-style-type: none; /* Removes the bullet points */
+    padding: 0;
+    margin: 0;
+}
+
+.hex-item ul > li {
+    font-style: italic;
+    font-size: 0.9em;
+    margin-bottom: 3px;
+}
+
+/* Pushing items into the Hexagon shape using Row/Column coordinates */
+.cat-1 { grid-column: 2; grid-row: 1; } /* Top Center */
+.cat-2 { grid-column: 3; grid-row: 2; } /* Top Right */
+.cat-3 { grid-column: 3; grid-row: 3; } /* Bottom Right */
+.cat-4 { grid-column: 2; grid-row: 4; } /* Bottom Center */
+.cat-5 { grid-column: 1; grid-row: 3; } /* Bottom Left */
+.cat-6 { grid-column: 1; grid-row: 2; } /* Top Left */
+
+/* Safety fallback for mobile screens so it doesn't squish */
+@media (max-width: 768px) {
+    .hexagon-grid {
+        display: flex;
+        flex-direction: column;
+    }
+}
