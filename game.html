@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trivia Web App</title>
+    <style>
+        /* Jeopardy Theme Styles */
+        body {
+            background-color: #060CE9; /* Classic Jeopardy Blue */
+            color: white;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        #game-container {
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.5);
+            max-width: 600px;
+            width: 90%;
+        }
+        #category {
+            color: #FFCC00; /* Gold */
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+        #question {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 30px;
+            min-height: 80px;
+        }
+        .btn-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+        .answer-btn {
+            background-color: white;
+            color: #060CE9;
+            border: 2px solid #FFCC00;
+            padding: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .answer-btn:hover {
+            background-color: #FFCC00;
+            color: black;
+        }
+        /* Correct and Wrong States */
+        .correct {
+            background-color: #28a745 !important; /* Green */
+            color: white !important;
+            border-color: white !important;
+        }
+        .wrong {
+            background-color: #dc3545 !important; /* Red */
+            color: white !important;
+            border-color: white !important;
+        }
+        #score-tracker {
+            margin-top: 25px;
+            font-size: 1rem;
+            color: #ccc;
+        }
+        a {
+            color: #FFCC00;
+            text-decoration: none;
+            display: block;
+            margin-top: 20px;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <div id="category">Category Loading...</div>
+        <div id="question">Question Loading...</div>
+        <div class="btn-grid" id="answer-buttons">
+            </div>
+        <div id="score-tracker">Question: <span id="q-number">1</span> / 30</div>
+        <a href="scratch.html">Exit Game & Return to Main Page</a>
+    </div>
+
+    <script>
+        // The Master Question Bank (30 Questions)
+        const questionBank = [
+            // GEOGRAPHY
+            { category: "Geography", question: "Which US National Forest is located in northern Utah and southwestern Wyoming, famous for its rugged peaks?", answers: ["Yellowstone", "Uinta-Wasatch-Cache", "Yosemite", "Tonto"], correct: "Uinta-Wasatch-Cache" },
+            { category: "Geography", question: "Sun Valley, a famous resort city known for skiing and hiking, is located in which US state?", answers: ["Colorado", "Utah", "Idaho", "Montana"], correct: "Idaho" },
+            { category: "Geography", question: "What river flows directly through the center of Paris, France?", answers: ["Thames", "Rhine", "Seine", "Danube"], correct: "Seine" },
+            { category: "Geography", question: "The city of Florence is located in which beautiful Italian region?", answers: ["Tuscany", "Lombardy", "Sicily", "Campania"], correct: "Tuscany" },
+            { category: "Geography", question: "What is the capital city of Australia?", answers: ["Sydney", "Melbourne", "Brisbane", "Canberra"], correct: "Canberra" },
+            
+            // SPORTS
+            { category: "Sports", question: "In rock climbing, what piece of metal equipment is used to clip the rope to protection points?", answers: ["Pitons", "Carabiner", "Belay Device", "Crampon"], correct: "Carabiner" },
+            { category: "Sports", question: "Which of these fish species is known for having red or black spots with halos, often caught in western reservoirs?", answers: ["Rainbow Trout", "Largemouth Bass", "Brown Trout", "Kokanee Salmon"], correct: "Brown Trout" },
+            { category: "Sports", question: "What is the maximum possible score in a single game of bowling?", answers: ["200", "250", "300", "400"], correct: "300" },
+            { category: "Sports", question: "How many players are on the field for a standard soccer team?", answers: ["9", "10", "11", "12"], correct: "11" },
+            { category: "Sports", question: "Which country has won the most FIFA World Cups?", answers: ["Germany", "Brazil", "Italy", "Argentina"], correct: "Brazil" },
+
+            // ART
+            { category: "Art", question: "Which post-impressionist artist lived in Giverny, France, and painted the famous Water Lilies?", answers: ["Vincent van Gogh", "Claude Monet", "Pierre-Auguste Renoir", "Edgar Degas"], correct: "Claude Monet" },
+            { category: "Art", question: "What Renaissance sculptor created the famous marble statue of David located in Florence?", answers: ["Leonardo da Vinci", "Donatello", "Raphael", "Michelangelo"], correct: "Michelangelo" },
+            { category: "Art", question: "Who painted the Mona Lisa?", answers: ["Vincent van Gogh", "Leonardo da Vinci", "Pablo Picasso", "Claude Monet"], correct: "Leonardo da Vinci" },
+            { category: "Art", question: "What art movement is characterized by small, distinct dots of color applied in patterns to form an image?", answers: ["Cubism", "Surrealism", "Pointillism", "Abstract"], correct: "Pointillism" },
+            { category: "Art", question: "Which famous painter is known for cutting off part of his own ear?", answers: ["Salvador Dali", "Vincent van Gogh", "Frida Kahlo", "Jackson Pollock"], correct: "Vincent van Gogh" },
+
+            // ENTERTAINMENT
+            { category: "Entertainment", question: "Who is the highest-earning contestant in Jeopardy! regular-season history?", answers: ["James Holzhauer", "Brad Rutter", "Ken Jennings", "Amy Schneider"], correct: "Ken Jennings" },
+            { category: "Entertainment", question: "What popular mobile app features a spinning wheel with categories like Art, Science, and Sports?", answers: ["HQ Trivia", "Trivia Crack", "QuizUp", "Jeopardy! World Tour"], correct: "Trivia Crack" },
+            { category: "Entertainment", question: "What actor played Jack Dawson in the 1997 movie Titanic?", answers: ["Brad Pitt", "Johnny Depp", "Leonardo DiCaprio", "Matt Damon"], correct: "Leonardo DiCaprio" },
+            { category: "Entertainment", question: "Which fictional city is the home of Batman?", answers: ["Metropolis", "Central City", "Star City", "Gotham City"], correct: "Gotham City" },
+            { category: "Entertainment", question: "Who played the character of Harry Potter in the film series?", answers: ["Rupert Grint", "Elijah Wood", "Daniel Radcliffe", "Tom Holland"], correct: "Daniel Radcliffe" },
+
+            // HISTORY
+            { category: "History", question: "Which French palace, built by Louis XIV, became the principal royal residence until the French Revolution?", answers: ["The Louvre", "Palace of Versailles", "Château de Chambord", "Palais Royal"], correct: "Palace of Versailles" },
+            { category: "History", question: "In what city is the Smithsonian Institution headquartered?", answers: ["New York City", "Philadelphia", "Boston", "Washington D.C."], correct: "Washington D.C." },
+            { category: "History", question: "Who was the first President of the United States?", answers: ["Thomas Jefferson", "John Adams", "George Washington", "James Madison"], correct: "George Washington" },
+            { category: "History", question: "In what year did the Titanic sink?", answers: ["1905", "1912", "1920", "1923"], correct: "1912" },
+            { category: "History", question: "Who was the British Prime Minister during most of World War II?", answers: ["Neville Chamberlain", "Winston Churchill", "Clement Attlee", "Margaret Thatcher"], correct: "Winston Churchill" },
+
+            // SCIENCE
+            { category: "Science", question: "What statistical method is used to compare the means of three or more independent groups?", answers: ["T-test", "Chi-Square", "ANOVA", "Z-test"], correct: "ANOVA" },
+            { category: "Science", question: "In statistics, what technique is used to model the relationship between a dependent variable and independent variables?", answers: ["Regression Analysis", "Standard Deviation", "Probability Density", "Cluster Analysis"], correct: "Regression Analysis" },
+            { category: "Science", question: "What is the chemical symbol for Gold?", answers: ["Go", "Ag", "Au", "Gd"], correct: "Au" },
+            { category: "Science", question: "What planet is known as the Red Planet?", answers: ["Venus", "Jupiter", "Saturn", "Mars"], correct: "Mars" },
+            { category: "Science", question: "What is commonly known as the powerhouse of the biological cell?", answers: ["Nucleus", "Ribosome", "Mitochondria", "Chloroplast"], correct: "Mitochondria" }
+        ];
+
+        // Shuffle the questions array so it's a random game every time
+        let shuffledQuestions = questionBank.sort(() => Math.random() - 0.5);
+        let currentQuestionIndex = 0;
+
+        const questionElement = document.getElementById('question');
+        const categoryElement = document.getElementById('category');
+        const answerButtonsElement = document.getElementById('answer-buttons');
+        const qNumberElement = document.getElementById('q-number');
+
+        function startGame() {
+            currentQuestionIndex = 0;
+            showQuestion(shuffledQuestions[currentQuestionIndex]);
+        }
+
+        function showQuestion(q) {
+            // Update Text
+            categoryElement.innerText = q.category;
+            questionElement.innerText = q.question;
+            qNumberElement.innerText = currentQuestionIndex + 1;
+            
+            // Clear old buttons
+            answerButtonsElement.innerHTML = '';
+
+            // Shuffle the 4 answers so the correct one isn't always in the same spot
+            let randomizedAnswers = [...q.answers].sort(() => Math.random() - 0.5);
+
+            // Create buttons
+            randomizedAnswers.forEach(answer => {
+                const button = document.createElement('button');
+                button.innerText = answer;
+                button.classList.add('answer-btn');
+                
+                // Add click listener
+                button.addEventListener('click', () => selectAnswer(button, answer === q.correct));
+                answerButtonsElement.appendChild(button);
+            });
+        }
+
+        function selectAnswer(button, isCorrect) {
+            if (isCorrect) {
+                button.classList.add('correct');
+                
+                // Disable all buttons so they can't keep clicking
+                Array.from(answerButtonsElement.children).forEach(btn => btn.disabled = true);
+                
+                // Wait 1 second so they see the green, then go to next question
+                setTimeout(() => {
+                    currentQuestionIndex++;
+                    if (currentQuestionIndex < shuffledQuestions.length) {
+                        showQuestion(shuffledQuestions[currentQuestionIndex]);
+                    } else {
+                        // Game Over state
+                        categoryElement.innerText = "GAME OVER";
+                        questionElement.innerText = "You are a trivia master! You answered all 30 questions.";
+                        answerButtonsElement.innerHTML = '';
+                    }
+                }, 1000);
+            } else {
+                // If wrong, just turn this button red and let them try again
+                button.classList.add('wrong');
+            }
+        }
+
+        // Start the game immediately when the page loads
+        startGame();
+
+    </script>
+</body>
+</html>
